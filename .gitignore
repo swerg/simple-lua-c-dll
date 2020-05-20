@@ -3,6 +3,7 @@
 *.7z
 .bin
 .tmp
+.Build
 
 #VS temp files
 *.suo

@@ -6,15 +6,16 @@
 #include <windows.h>
 #include <process.h>
 
-// в случае вызова функций из LUA-кода во внешней DLL
-// необходимо определить эти константы до подключения заголовочных файлов LUA
+// в случае вызова функций из Lua-кода во внешней DLL
+// необходимо определить эти константы до подключения заголовочных файлов Lua
 #define LUA_LIB
 #define LUA_BUILD_AS_DLL
 
-// заголовочные файлы LUA из дистрибутива LUA
+// подключаем заголовочные файлы из дистрибутива Lua
+// правильный путь к файлам Lua5.1 или Lua5.3 задан в настройках проекта (разный в зависимости от выбранного варианта в Solution Configurations)
 extern "C" {
-#include "../contrib/lauxlib.h"
-#include "../contrib/lua.h"
+#include "lauxlib.h"
+#include "lua.h"
 }
 
 // стандартная точка входа для DLL
@@ -26,7 +27,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     return TRUE;
 }
 
-// реализация функций, вызываемых из LUA
+// реализация наших функций, вызываемых из Lua
 
 static int forLua_GetCurrentThreadId(lua_State *L) {
 	// возвращаем одно значение, полученное от Win API функции
@@ -64,9 +65,8 @@ static int forLua_MultAllNumbers(lua_State *L) {
     return(1);
 }
 	
-// регистрация реализованных в dll функций, чтобы они стали "видимы" для LUA
-
-static struct luaL_reg ls_lib[] = {
+// список реализованных в dll функций
+static struct luaL_Reg ls_lib[] = {
     {"GetCurrentThreadId", forLua_GetCurrentThreadId},
     {"MultTwoNumbers", forLua_MultTwoNumbers},
     {"MultAllNumbers", forLua_MultAllNumbers},
@@ -74,7 +74,16 @@ static struct luaL_reg ls_lib[] = {
 };
 
 extern "C" LUALIB_API int luaopen_luacdll(lua_State *L) {
-    luaL_openlib(L, "luacdll", ls_lib, 0);
-    return 0;
+	// эта функция выполнится в момент вызова require() в Lua-коде
+	// регистрируем реализованные в dll функций, чтобы они стали дуступны для Lua
+	#if LUA_VERSION_NUM >= 502
+		lua_newtable(L);
+		luaL_setfuncs(L, ls_lib, 0);
+		lua_setglobal(L, "luacdll"); 
+	#else
+		luaL_openlib(L, "luacdll", ls_lib, 0);
+	#endif
+
+	return 1;
 }
 
