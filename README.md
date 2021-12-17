@@ -7,8 +7,7 @@ https://quik2dde.ru/viewtopic.php?id=18
 
 ## Варианты сборки
 
-- QUIK до версии 7.5 (x32 / Lua5.1) --> выбираем Release или Debug и платформу Win32
-- QUIK версии 8.0...8.4 (x64 / Lua5.1) --> выбираем Release или Debug и платформу x64
-- QUIK версии 8.5 и далее (x64 / Lua5.3) --> выбираем Release-Lua53 или Debug-Lua53 и платформу x64
-
-
+- Release / Debug | Win32 - для QUIK 6.x / 7.x (x32, Lua5.1)
+- Release / Debug | x64 - для QUIK 8.0...8.4 (x64, Lua5.1)
+- Release-Lua53 / Debug-Lua53 | x64 - для QUIK 8.5 и далее (x64, Lua5.3)
+- Release-Lua54 / Debug-Lua54 | x64 - для QUIK 8.11 и далее (x64, Lua5.4)
